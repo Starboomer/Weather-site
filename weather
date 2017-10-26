@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="stylesheet" src="C:\Users\user\Desktop\Site\css\sliderStyle.css">
+</head>
+<body>
+<div id="raz">
+  <img src="http://1.bp.blogspot.com/-rMnW9I5lal0/Ue96vOUnXuI/AAAAAAAAD8M/YQd22BfQG90/s00/obeziana.jpg" alt="Орангутан"/>
+  <img src="http://4.bp.blogspot.com/-S2btlKknLJw/T0a8Nb2m-II/AAAAAAAACv8/j3ZpxP0qSak/s00/pes.jpg" alt="Пёс"/>
+  <img src="http://2.bp.blogspot.com/-NEvSypEsQv0/TZQ1tka_UwI/AAAAAAAABqo/qjYR-YSjjws/s600/mishki.jpg" alt="Мишки"/>
+  <div>
+    <button type="button" value="0">1</button>
+    <button type="button" value="1">2</button>
+    <button type="button" value="2">3</button>
+  </div>
+</div>
+
+<style>
+#raz {
+  position: relative;
+  max-width: 100%;  /* можно ограничить по ширине в любых единицах, в т.ч. px (необязательно) */
+  max-height: 400px;  /* можно ограничить по высоте в любых единицах, в т.ч. px (необязательно) */
+  overflow: hidden;  /* удалить, если нет max-width, max-height и outline у img */
+}
+#raz img {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  
+
+  /* Версия 2: абзац для того, чтобы изображение сохранило свои пропорции и было по середине области слайдера. То есть нужно выбрать одну из версий в img */
+  bottom: 0;
+  right: 0;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  outline: 300px solid #fff; /* для того, чтобы пропорциональные нижние картинки не были видны (необязательно) */
+
+}
+#raz div {
+  position: relative;
+  height: 0;
+  margin-bottom: 60%; /* процент от ширины (тут есть калькулятор) */
+  z-index: 3;
+}
+#raz img:nth-of-type(1) {
+  z-index: 2;
+}
+#raz button:nth-of-type(1) {
+  opacity: 0.4;
+}
+</style>
+
+<script>
+window.requestAnimationFrame = (function () { // для поддержки requestAnimationFrame всеми браузерами
+        return window.requestAnimationFrame ||
+               function (callback) {
+                   return window.setTimeout(callback, 1000 / 60);
+               };
+})();
+// функция слайдера
+function slider(f, img, button, V, Vo) {
+  var iii = 0,
+      start = null,
+      clear = 0;
+  function step(time) {
+    if (start === null) start = time;
+    var progress = time - start;
+    if (progress > V) {
+      start = null;
+      for (var i=0; i<img.length; i++) {
+        img[i].style.zIndex = "0";
+        button[i].style.opacity = "1";
+      }
+      img[iii].style.zIndex = "1";
+      iii = ((iii != (img.length - 1)) ? (iii + 1) : 0);
+      img[iii].style.zIndex = "2";
+      img[iii].style.opacity = "0";
+      button[iii].style.opacity = ".4";
+    } else if(img[iii].style.opacity != "") {
+      img[iii].style.opacity = ((progress/Vo < 1) ? (progress/Vo) : 1);
+    }
+    if(clear != "0" && progress > Vo) {} else {requestAnimationFrame(step);}
+  }
+  requestAnimationFrame(step);
+  f.onmouseenter = function() { if(clear == "0") clear = "1"; }  // при наведении на слайдер
+  f.onmouseleave = function() { if(clear == "1") {clear = "0"; requestAnimationFrame(step);} }  // курсор убран со слайдера
+  for (var j=0; j<button.length; j++) {  // при нажатии кнопок
+    button[j].onclick = function() {
+      clear = "2";
+      for (var i=0; i<img.length; i++) {
+        img[i].style.zIndex = "0";
+      }
+      img[this.value].style.zIndex = "2";
+      img[this.value].style.opacity = "1";
+      for (var k=0; k<button.length; k++) {
+        button[k].style.opacity = ((button[k] == this) ? '.4' : '1');
+      }
+    }
+  }
+}
+// вызов функции слайдера
+var f = document.getElementById('raz'),
+    img = f.getElementsByTagName('img'),
+    button = f.getElementsByTagName('div')[0].getElementsByTagName('button');
+slider(f, img, button, '5000', '1000');  // '5000' — скорость смены картинок, '1000' — скорость прозрачности
+</script>
+</body>
+</html>
